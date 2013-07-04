@@ -1,4 +1,5 @@
-bottle
-gevent
 parsedatetime
+bottle
+logbook
+gevent
 gunicorn
