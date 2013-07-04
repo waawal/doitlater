@@ -5,7 +5,9 @@ import gevent
 gevent.monkey.patch_all()
 
 import requests
-from bottle import Bottle, route, request, HTTPError 
+import logbook
+import parsedatetime
+from bottle import Bottle, route, request, HTTPError
 
 TOKENS = environ.get('doitlater')
 if TOKENS is None:
@@ -20,10 +22,14 @@ def difference_in_seconds(stamp):
     return (24*60*60*delta.days + delta.seconds + delta.microseconds/1000000)
 
 def enqueue(req):
+    p = parsedatetime.Calendar().parse(req['when'])
     gevent.spawn_later(seconds, function, *args, **kwargs)
 
 def validate_request(req):
-    pass
+    validated = {}
+    for key in "url method auth headers body when callback".split()
+        validated[key] = req.get(key)
+    enqueue(validated)
 
 @app.route('/<token>/')
 def index(token):
