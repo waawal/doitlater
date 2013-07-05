@@ -18,7 +18,15 @@ TOKENS = TOKENS.split(':')
 app = Bottle()
 
 def execute(req):
-    pass
+    if not req['request'].get('auth') is None:
+        req['request']['auth'] = req['request']['auth'].split(':')
+    res = requests.request(req['request'].get('method', 'GET'),
+                           req['request']['url'],
+                           auth=req['request'].get('auth'),
+                           data=req['request'].get('body'),
+                           )
+    if req['request'].get('callback'):
+        requests.post(req['request']['callback'], data=res)
 
 def difference_in_seconds(stamp):
     delta = stamp - datetime.datetime.now()
