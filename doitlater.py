@@ -60,7 +60,7 @@ def validate_request(req):
         validated['request'][key] = req['request'].get(key)
     enqueue(validated)
 
-@app.route('/<token>/')
+@app.post('/<token>/')
 def index(token):
     if not token in TOKENS:
         raise HTTPError(401)
