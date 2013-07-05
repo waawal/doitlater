@@ -17,18 +17,31 @@ TOKENS = TOKENS.split(':')
 
 app = Bottle()
 
+def execute(req):
+    pass
+
 def difference_in_seconds(stamp):
     delta = stamp - datetime.datetime.now()
     return (24*60*60*delta.days + delta.seconds + delta.microseconds/1000000)
 
 def enqueue(req):
-    p = parsedatetime.Calendar().parse(req['when'])
-    gevent.spawn_later(seconds, function, *args, **kwargs)
+    if req['when'] is None:
+        gevent.spawn(execute, req)
+    stamp = parsedatetime.Calendar().parse(req['when'])
+    when = difference_in_seconds(stamp)
+    if when < 0:
+        gevent.spawn(execute, req)
+
+    gevent.spawn_later(when, execute, req)
 
 def validate_request(req):
+    if 'request' not in req:
+        raise HTTPError(400)
     validated = {}
-    for key in "url method auth headers body when callback".split()
+    for key in "body when hook".split():
         validated[key] = req.get(key)
+    for key in "url method auth headers".split()
+        validated['request'][key] = req['request'].get(key)
     enqueue(validated)
 
 @app.route('/<token>/')
