@@ -1,5 +1,9 @@
 from os import environ
 import datetime
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
 
 import gevent
 gevent.monkey.patch_all()
@@ -43,7 +47,11 @@ def enqueue(req):
     gevent.spawn_later(when, execute, req)
 
 def validate_request(req):
-    if 'request' not in req:
+    if 'request' not in req or not req['request'].get('url'):
+        raise HTTPError(400)
+    try:
+        urlparse(req['request']['url'])
+    except ValueError:
         raise HTTPError(400)
     validated = {}
     for key in "body when hook".split():
